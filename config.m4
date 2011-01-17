@@ -6,7 +6,7 @@ PHP_ARG_ENABLE(fastlz, whether to enable fastlz support,
 
 if test "$PHP_FASTLZ" != "no"; then
 
-  fastlz_sources="fastlz.c\
+  fastlz_sources="libfastlz/fastlz.c\
 					php_fastlz.c"
 
   PHP_NEW_EXTENSION(fastlz, $fastlz_sources, $ext_shared)
