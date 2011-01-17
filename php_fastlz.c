@@ -11,8 +11,10 @@
 #include "zend_hash.h"
 #include "ext/standard/info.h"
 #include "SAPI.h"
+#include "stdint.h"
 
 #include "php_fastlz.h"
+#include "libfastlz/fastlz.h"
 
 /* {{{ fastlz globals 
  *
@@ -22,7 +24,7 @@
 
 /* {{{ PHP_FUNCTION declarations */
 PHP_FUNCTION(fastlz_compress);
-PHP_FUNCTION(fastlz_uncompress);
+PHP_FUNCTION(fastlz_decompress);
 /* }}} */
 
 /* {{{ ZEND_DECLARE_MODULE_GLOBALS(fastlz) */
@@ -59,12 +61,12 @@ PHP_INI_END()
 /* {{{ arginfo */
 FASTLZ_ARGINFO_STATIC
 ZEND_BEGIN_ARG_INFO(php_fastlz_compress_arginfo, 0)
-    ZEND_ARG_INFO(0, key)
+    ZEND_ARG_INFO(0, value)
 ZEND_END_ARG_INFO()
 
 FASTLZ_ARGINFO_STATIC
-ZEND_BEGIN_ARG_INFO(php_fastlz_uncompress_arginfo, 0)
-    ZEND_ARG_INFO(0, key)
+ZEND_BEGIN_ARG_INFO(php_fastlz_decompress_arginfo, 0)
+    ZEND_ARG_INFO(0, compressed)
 ZEND_END_ARG_INFO()
 /* }}} */
 
@@ -75,7 +77,7 @@ ZEND_END_ARG_INFO()
  */
 zend_function_entry fastlz_functions[] = {
 	PHP_FE(fastlz_compress,               php_fastlz_compress_arginfo)
-	PHP_FE(fastlz_uncompress,             php_fastlz_uncompress_arginfo)
+	PHP_FE(fastlz_decompress,             php_fastlz_decompress_arginfo)
 	{NULL, NULL, NULL}	/* Must be the last line in fastlz_functions[] */
 };
 /* }}} */
@@ -104,7 +106,7 @@ ZEND_GET_MODULE(fastlz)
 
 /* {{{ PHP_MINIT_FUNCTION
  */
-PHP_MINIT_FUNCTION(hidef)
+PHP_MINIT_FUNCTION(fastlz)
 {
 	ZEND_INIT_MODULE_GLOBALS(fastlz, php_fastlz_init_globals, php_fastlz_shutdown_globals);
 
@@ -145,29 +147,82 @@ PHP_MINFO_FUNCTION(fastlz)
 
 /* {{{ proto string fastlz_compress(string value)
  */
-PHP_FUNCTION(fastlz_fetch) 
+PHP_FUNCTION(fastlz_compress) 
 {
-	char *strkey;
-	int strkey_len;
+	char *value;
+	int value_len;
+	uint32_t compressed_len;
+	char *compressed;
 
-	if(zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &strkey, &strkey_len) == FAILURE)
+	if(zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &value, &value_len) == FAILURE)
 	{
 		return;
 	}
+
+	compressed_len = sizeof(uint32_t) + ((value_len*1.05) + 1);
+
+	compressed = emalloc(compressed_len);
+
+	if(compressed)
+	{
+		memcpy(compressed, &value_len, sizeof(uint32_t));
+		compressed += sizeof(uint32_t);
+		compressed_len = fastlz_compress_level(FASTLZ_G(compression_level), value, value_len, compressed);
+		if(compressed_len > 0)
+		{
+			compressed_len += sizeof(uint32_t);
+			compressed -= sizeof(uint32_t);
+			RETURN_STRINGL(compressed, compressed_len, 0);
+			return;
+		}
+		else
+		{
+			efree(compressed);
+		}
+	}
+
+	RETURN_NULL();
 }
 /* }}} */
 
-/* {{{ proto string fastlz_uncompress(string key)
+/* {{{ proto string fastlz_decompress(string key)
  */
-PHP_FUNCTION(fastlz_uncompress) 
+PHP_FUNCTION(fastlz_decompress) 
 {
-	char *strkey;
-	int strkey_len;
+	char *value;
+	uint32_t value_len;
+	int compressed_len;
+	char *compressed;
 
-	if(zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &strkey, &strkey_len) == FAILURE)
+	if(zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &compressed, &compressed_len) == FAILURE)
 	{
 		return;
 	}
+
+	if(compressed_len > sizeof(uint32_t)) 
+	{
+		memcpy(&value_len, compressed, sizeof(uint32_t));
+		if(value_len > 0) 
+		{
+			compressed += sizeof(uint32_t);
+			compressed_len -= sizeof(uint32_t);
+			value = emalloc(value_len);
+			if(value)
+			{
+				if(value_len == fastlz_decompress(compressed, compressed_len, value, value_len)) 
+				{
+					RETURN_STRINGL(value, value_len, 0);
+					return;
+				}
+				else
+				{
+					efree(value);
+				}
+			}
+		}
+	}
+
+	RETURN_NULL();
 }
 /* }}} */
 
