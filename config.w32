@@ -1,0 +1,9 @@
+// $Id$
+// vim:ft=javascript
+
+ARG_ENABLE("fastlz", "whether to enable fastlz support", "no");
+
+if (PHP_FASTLZ == "yes") {
+	EXTENSION("fastlz", "php_fastlz.c", true)
+	ADD_SOURCES(configure_module_dirname + "/libfastlz", "fastlz.c ", "fastlz");
+}
