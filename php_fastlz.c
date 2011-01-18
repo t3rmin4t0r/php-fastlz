@@ -122,7 +122,7 @@ static int fastlz_xcompress(char *value, int value_len, char** cvalue TSRMLS_DC)
 
 	assert(value && cvalue);
 
-	compressed_len = sizeof(uint32_t) + ((value_len*1.05) + 1);
+	compressed_len = sizeof(uint32_t) + (uint32_t)((value_len*1.05) + 1);
 
 	compressed = emalloc(compressed_len);
 
