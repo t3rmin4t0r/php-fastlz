@@ -17,6 +17,8 @@
 # include "stdint.h"
 #endif
 
+#include "arpa/inet.h"
+
 #ifdef HAVE_APC_SUPPORT
 # include "ext/standard/php_var.h"
 # include "ext/standard/php_smart_str.h"
@@ -119,6 +121,7 @@ static int fastlz_xcompress(char *value, int value_len, char** cvalue TSRMLS_DC)
 {
 	uint32_t compressed_len;
 	char *compressed;
+	const uint32_t size_header = htonl(value_len);
 
 	assert(value && cvalue);
 
@@ -128,7 +131,7 @@ static int fastlz_xcompress(char *value, int value_len, char** cvalue TSRMLS_DC)
 
 	if(compressed)
 	{
-		memcpy(compressed, &value_len, sizeof(uint32_t));
+		memcpy(compressed, &size_header, sizeof(uint32_t));
 		compressed += sizeof(uint32_t);
 		compressed_len = fastlz_compress_level(FASTLZ_G(compression_level), value, value_len, compressed);
 		if(compressed_len > 0)
@@ -157,6 +160,7 @@ static int fastlz_xdecompress(char *compressed, int compressed_len, char** uvalu
 	if(compressed_len > sizeof(uint32_t)) 
 	{
 		memcpy(&value_len, compressed, sizeof(uint32_t));
+		value_len = ntohl(value_len);
 		if(value_len > 0) 
 		{
 			compressed += sizeof(uint32_t);
@@ -166,7 +170,7 @@ static int fastlz_xdecompress(char *compressed, int compressed_len, char** uvalu
 			{
 				if(value_len == fastlz_decompress(compressed, compressed_len, value, value_len)) 
 				{
-					(*uvalue) = value;
+					uvalue[0] = value;
 					return value_len;
 				}
 				else
