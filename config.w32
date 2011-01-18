@@ -1,0 +1,9 @@
+// $Id$
+// vim:ft=javascript
+
+ARG_ENABLE("fastlz", "whether to enable fastlz support", "no");
+
+if (PHP_IGBINARY == "yes") {
+	fastlz_sources="libfastlz/fastlz.c php_fastlz.c"
+	EXTENSION("fastlz", fastlz_sources, true)
+}
