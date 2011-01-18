@@ -1,0 +1,10 @@
+fastlz
+========
+
+FastLZ is a php binding for http://fastlz.org/. Two functions are 
+exposed, fastlz_compress and fastlz_decompress:
+
+proto string fastlz_compress(string data)
+proto string fastlz_decompress(string data)
+
+This extension is maintained at https://github.com/t3rmin4t0r/php-fastlz
