@@ -18,6 +18,6 @@ var_dump($foo);
 <?php exit(0); ?>
 --EXPECTF--
 string(11) "hello world"
-string(32) "0b0000000a68656c6c6f20776f726c64"
+string(32) "0000000b0a68656c6c6f20776f726c64"
 string(11) "hello world"
 ===DONE===
