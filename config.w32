@@ -4,6 +4,10 @@
 ARG_ENABLE("fastlz", "whether to enable fastlz support", "no");
 
 if (PHP_FASTLZ == "yes") {
+	res = CHECK_HEADER_ADD_INCLUDE("apc_serializer.h", "CFLAGS_FASTLZ", "..\\pecl\\apc;ext\\apc");
+	if (res) {
+		AC_DEFINE('HAVE_APC_SUPPORT', 1, 'Whether to enable apc support')
+	}
 	EXTENSION("fastlz", "php_fastlz.c", true)
 	ADD_SOURCES(configure_module_dirname + "/libfastlz", "fastlz.c ", "fastlz");
 }
