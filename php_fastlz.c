@@ -122,7 +122,7 @@ ZEND_GET_MODULE(fastlz)
 #endif
 
 /* {{{ fastlz helper functions */
-PHP_FASTLZ_API int fastlz_xcompress(char *value, int value_len, char** cvalue TSRMLS_DC)
+PHP_FASTLZ_API int fastlz_xcompress(char *value, int value_len, char** cvalue, long compression_level TSRMLS_DC)
 {
 	uint32_t compressed_len;
 	char *compressed;
@@ -135,7 +135,7 @@ PHP_FASTLZ_API int fastlz_xcompress(char *value, int value_len, char** cvalue TS
 	compressed = emalloc(compressed_len);
 
 	memcpy(compressed, &size_header, sizeof(uint32_t));
-	compressed_len = fastlz_compress_level(FASTLZ_G(compression_level), value, value_len, (compressed + sizeof(uint32_t)));
+	compressed_len = fastlz_compress_level(compression_level, value, value_len, (compressed + sizeof(uint32_t)));
 	if (compressed_len > 0) {
 		compressed_len += sizeof(uint32_t);
 		compressed[compressed_len] = 0;
@@ -189,7 +189,7 @@ int APC_SERIALIZER_NAME(fastlz) (APC_SERIALIZER_ARGS)
     php_var_serialize(&strbuf, (zval**)&value, &var_hash TSRMLS_CC);
     PHP_VAR_SERIALIZE_DESTROY(var_hash);
     if (strbuf.c) {
-		*buf_len = fastlz_xcompress(strbuf.c, strbuf.len, (char**)buf);
+		*buf_len = fastlz_xcompress(strbuf.c, strbuf.len, (char**)buf, FASTLZ_G(compression_level));
 
 		smart_str_free(&strbuf);
 
@@ -275,12 +275,18 @@ PHP_FUNCTION(fastlz_compress)
 	int value_len;
 	uint32_t compressed_len;
 	char *compressed;
+	long compression_level = FASTLZ_G(compression_level);
 
-	if(zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &value, &value_len) == FAILURE) {
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s|l", &value, &value_len, &compression_level) == FAILURE) {
 		return;
 	}
 
-	compressed_len = fastlz_xcompress(value, value_len, &compressed);
+	if (compression_level != 1 && compression_level != 2) {
+		php_error_docref(NULL TSRMLS_CC, E_NOTICE, "Compression level must be either 1 or 2");
+		RETURN_FALSE;
+	}
+
+	compressed_len = fastlz_xcompress(value, value_len, &compressed, compression_level);
 
 	if (compressed_len > 0) {
 		RETURN_STRINGL(compressed, compressed_len, 0);
