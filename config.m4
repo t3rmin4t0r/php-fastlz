@@ -19,4 +19,5 @@ if test "$PHP_FASTLZ" != "no"; then
 					php_fastlz.c"
 
   PHP_NEW_EXTENSION(fastlz, $fastlz_sources, $ext_shared)
+  PHP_ADD_BUILD_DIR([$ext_builddir/libfastlz])
 fi
