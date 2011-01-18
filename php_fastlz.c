@@ -162,7 +162,7 @@ PHP_FUNCTION(fastlz_compress)
 		return;
 	}
 
-	compressed_len = sizeof(uint32_t) + ((value_len*1.05) + 1);
+	compressed_len = sizeof(uint32_t) + (uint32_t)((value_len*1.05) + 1);
 
 	compressed = emalloc(compressed_len);
 
