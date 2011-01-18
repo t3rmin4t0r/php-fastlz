@@ -60,6 +60,9 @@ http://pear.php.net/dtd/package-2.0.xsd">
         <file name="README.TXT" role="doc" />
         <file name="README.imported" role="doc" />
       <dir>
+      <dir name="tests">
+        <file name="basic004.phpt" role="test" />
+      <dir>
     </dir>
   </contents>
   <dependencies>
