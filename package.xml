@@ -7,10 +7,7 @@ http://pear.php.net/dtd/package-2.0.xsd">
   <channel>pecl.php.net</channel> <!-- doesn't allow empty channel -->
   <summary>igbinary extension</summary>
   <description>
-	Igbinary is a drop in replacement for the standard php serializer. Instead of
-	time and space consuming textual representation, igbinary stores php data
-	structures in a compact binary form. Savings are significant when using
-	memcached or similar memory based storages for serialized data.
+   fastly is a PHP binding for libfastz
   </description>
   <lead>
     <name>Gopal Vijayaraghavan</name>
