@@ -135,7 +135,7 @@ PHP_FASTLZ_API int fastlz_xcompress(char *value, int value_len, char** cvalue, l
 	compressed = emalloc(compressed_len);
 
 	memcpy(compressed, &size_header, sizeof(uint32_t));
-	compressed_len = fastlz_compress_level(FASTLZ_G(compression_level), value, value_len, (compressed + sizeof(uint32_t)));
+	compressed_len = fastlz_compress_level(compression_level, value, value_len, (compressed + sizeof(uint32_t)));
 	if (compressed_len > 0) {
 		compressed_len += sizeof(uint32_t);
 		compressed[compressed_len] = 0;
@@ -281,8 +281,8 @@ PHP_FUNCTION(fastlz_compress)
 		return;
 	}
 
-	if (compression_level < 1) {
-		php_error_docref(NULL TSRMLS_CC, E_NOTICE, "Compression level must be greater than 0");
+	if (compression_level != 1 && compression_level != 2) {
+		php_error_docref(NULL TSRMLS_CC, E_NOTICE, "Compression level must be either 1 or 2");
 		RETURN_FALSE;
 	}
 
