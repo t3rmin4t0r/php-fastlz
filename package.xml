@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<package packagerversion="1.4.11" version="2.0" xmlns="http://pear.php.net/dtd/package-2.0" xmlns:tasks="http://pear.php.net/dtd/tasks-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://pear.php.net/dtd/tasks-1.0
+http://pear.php.net/dtd/tasks-1.0.xsd
+http://pear.php.net/dtd/package-2.0
+http://pear.php.net/dtd/package-2.0.xsd">
+<name>igbinary</name>
+  <channel>pecl.php.net</channel> <!-- doesn't allow empty channel -->
+  <summary>igbinary extension</summary>
+  <description>
+	Igbinary is a drop in replacement for the standard php serializer. Instead of
+	time and space consuming textual representation, igbinary stores php data
+	structures in a compact binary form. Savings are significant when using
+	memcached or similar memory based storages for serialized data.
+  </description>
+  <lead>
+    <name>Gopal Vijayaraghavan</name>
+    <user>gopalv</user>
+    <email>gopalv@php.net</email>
+    <active>yes</active>
+  </lead>
+  <developer>
+    <name>Ilia Alshanetsky</name>
+    <user>iliaa</user>
+    <email>ilia@prohost.org</email>
+    <active>yes</active>
+  </developer>
+  <developer>
+    <name>Pierre Joye</name>
+    <user>pajoye</user>
+    <email>pierre@php.net</email>
+    <active>yes</active>
+  </developer>
+  <date>2011-01-18</date>
+  <version>
+    <release>0.1.0</release>
+    <api>0.1.0</api>
+  </version>
+  <stability>
+    <release>beta</release>
+    <api>beta</api>
+  </stability>
+  <license uri="http://www.php.net/license/3_01.txt">PHP</license>
+  <notes>
+   - Initial release
+  </notes>
+  <contents>
+    <dir name="/">
+      <file name="config.m4" role="src" />
+      <file name="config.w32" role="src" />
+
+      <file name="php_fastlz.c" role="src" />
+      <file name="php_fastlz.h" role="src" />
+
+      <file name="LICENSE" role="doc" />
+      <file name="LICENSE.LIBFASTLZ" role="doc" />
+      <file name="README" role="doc" />
+
+      <dir name="libfastlz">
+        <file name="6pack.c" role="src" />
+        <file name="6unpack.c" role="src" />
+        <file name="fastlz.c" role="src" />
+        <file name="fastlz.h" role="src" />
+        <file name="README.TXT" role="doc" />
+        <file name="README.imported" role="doc" />
+      <dir>
+    </dir>
+  </contents>
+  <dependencies>
+    <required>
+      <php>
+        <min>5.2.0</min>
+      </php>
+      <pearinstaller>
+        <min>1.4.0b1</min>
+      </pearinstaller>
+    </required>
+  </dependencies>
+  <providesextension>fastlz</providesextension>
+  <extsrcrelease>
+  </extsrcrelease>
+
+</package>
