@@ -29,11 +29,12 @@
 #include "SAPI.h"
 #ifdef PHP_WIN32
 # include "win32/php_stdint.h"
+# include <Winsock2.h>
 #else
 # include "stdint.h"
+# include "arpa/inet.h"
 #endif
 
-#include "arpa/inet.h"
 
 #ifdef HAVE_APC_SUPPORT
 # include "ext/standard/php_var.h"
@@ -121,7 +122,7 @@ ZEND_GET_MODULE(fastlz)
 #endif
 
 /* {{{ fastlz helper functions */
-PHPAPI int fastlz_xcompress(char *value, int value_len, char** cvalue, long compression_level TSRMLS_DC)
+PHP_FASTLZ_API int fastlz_xcompress(char *value, int value_len, char** cvalue, long compression_level TSRMLS_DC)
 {
 	uint32_t compressed_len;
 	char *compressed;
@@ -147,7 +148,7 @@ PHPAPI int fastlz_xcompress(char *value, int value_len, char** cvalue, long comp
 	return 0;
 }
 
-PHPAPI int fastlz_xdecompress(char *compressed, int compressed_len, char** uvalue TSRMLS_DC)
+PHP_FASTLZ_API int fastlz_xdecompress(char *compressed, int compressed_len, char** uvalue TSRMLS_DC)
 {
 	uint32_t value_len;
 
