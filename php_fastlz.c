@@ -121,7 +121,7 @@ ZEND_GET_MODULE(fastlz)
 #endif
 
 /* {{{ fastlz helper functions */
-PHPAPI int fastlz_xcompress(char *value, int value_len, char** cvalue TSRMLS_DC)
+PHPAPI int fastlz_xcompress(char *value, int value_len, char** cvalue, long compression_level TSRMLS_DC)
 {
 	uint32_t compressed_len;
 	char *compressed;
@@ -188,7 +188,7 @@ int APC_SERIALIZER_NAME(fastlz) (APC_SERIALIZER_ARGS)
     php_var_serialize(&strbuf, (zval**)&value, &var_hash TSRMLS_CC);
     PHP_VAR_SERIALIZE_DESTROY(var_hash);
     if (strbuf.c) {
-		*buf_len = fastlz_xcompress(strbuf.c, strbuf.len, (char**)buf);
+		*buf_len = fastlz_xcompress(strbuf.c, strbuf.len, (char**)buf, FASTLZ_G(compression_level));
 
 		smart_str_free(&strbuf);
 
@@ -274,12 +274,18 @@ PHP_FUNCTION(fastlz_compress)
 	int value_len;
 	uint32_t compressed_len;
 	char *compressed;
+	long compression_level = FASTLZ_G(compression_level);
 
-	if(zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &value, &value_len) == FAILURE) {
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s|l", &value, &value_len, &compression_level) == FAILURE) {
 		return;
 	}
 
-	compressed_len = fastlz_xcompress(value, value_len, &compressed);
+	if (compression_level < 1) {
+		php_error_docref(NULL TSRMLS_CC, E_NOTICE, "Compression level must be greater than 0");
+		RETURN_FALSE;
+	}
+
+	compressed_len = fastlz_xcompress(value, value_len, &compressed, compression_level);
 
 	if (compressed_len > 0) {
 		RETURN_STRINGL(compressed, compressed_len, 0);

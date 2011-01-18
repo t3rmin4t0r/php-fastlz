@@ -58,7 +58,7 @@ ZEND_EXTERN_MODULE_GLOBALS(fastlz)
 #endif
 
 PHPAPI int fastlz_xdecompress(char *compressed, int compressed_len, char** uvalue TSRMLS_DC);
-PHPAPI int fastlz_xcompress(char *value, int value_len, char** cvalue TSRMLS_DC);
+PHPAPI int fastlz_xcompress(char *value, int value_len, char** cvalue, long compression_level TSRMLS_DC);
 
 #endif	/* PHP_FASTLZ_H */
 
