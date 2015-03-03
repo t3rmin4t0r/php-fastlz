@@ -1,0 +1,19 @@
+{
+    "name": "fastlz",
+    "type": "extension",
+    "stability": "beta",
+    "version": "0.0.1",
+    "description": "FastLZ extension for php http://www.fastlz.org/",
+    "license": [
+                  "PHP License"
+    ],
+    "authors": [
+	{
+		"name": "Gopal Vijayaraghavan",
+		"email": "gopal@php.net"
+	}
+    ],
+    "extra": {
+        "configure-options": []
+    }
+}
